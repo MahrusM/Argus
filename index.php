@@ -145,7 +145,7 @@ height: 100%;
 
 </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
-    <div class="area"></div><nav class="main-menu">
+    <div id="areabb" class="area"></div><nav class="main-menu">
             <ul>
                 <li>
                   <?php
@@ -174,18 +174,18 @@ height: 100%;
                     <div class="collapsing" style="display:none">
                       ADD NODE
                       <form action="addnode.php" method="post">
-                          ID:<br>
-                          <input type="text" name="ID" value="69">
+                          NAME:<br>
+                          <input type="text" name="name" value="">
                           <br>
                           <input type="submit" value="Submit">
                       </form>
                       ADD RELATIONSHIP
-                      <form action="" method="post">
+                      <form action="addrelationship.php" method="post">
                           Node:<br>
-                          <input type="text" name="firstname" value="Mickey">
+                          <input type="text" name="name1" value="">
                           <br>
                           Last name:<br>
-                          <input type="text" name="lastname" value="Mouse">
+                          <input type="text" name="name2" value="=">
                           <br><br>
                           <input type="submit" value="Submit">
                       </form>
@@ -273,7 +273,7 @@ var coll = document.getElementsByClassName("collapsible");
 var i;
 
 for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("mouseenter", function() {
+  coll[i].addEventListener("click", function() {
     this.classList.toggle("active");
     var content = this.nextElementSibling;
     if (content.style.display === "block") {
@@ -281,19 +281,31 @@ for (i = 0; i < coll.length; i++) {
     } else {
       content.style.display = "block";
     }
-  });
+  })
 }
 
-var coll = document.getElementsByClassName("collapsing");
-var i;
+document.getElementById("areabb").addEventListener("mouseleave", function(){
+  document.getElementsByClassName("collapsing").style.display = "none";
+})
 
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("mouseleave", function() {
-    this.classList.toggle("active");
-    var content = this;
-    content.style.display = "none";
-  });
-}
+// for (i = 0; i < coll.length; i++) {
+//   coll[i].addEventListener("mouseleave", function() {
+//     this.classList.toggle("active");
+//     var content = this.nextElementSibling;
+//     content.style.display = "none";
+//   });
+// }
+
+// var coll = document.getElementsByClassName("collapsing");
+// var i;
+
+// for (i = 0; i < coll.length; i++) {
+//   coll[i].addEventListener("mouseleave", function() {
+//     this.classList.toggle("active");
+//     var content = this;
+//     content.style.display = "none";
+//   });
+// }
 
 // SCRIPT AJAX
 console.log("WOW")
@@ -319,8 +331,8 @@ var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }))
     .force("charge", d3.forceManyBody())
     .force("center", d3.forceCenter(width / 2, height / 2));
-
-d3.json("http://localhost:8888/entity/getraw", function(error, graph) {
+// http://localhost:8888/entity/getraw
+d3.json("pepeg.json", function(error, graph) {
   if (error) throw error;
 
   console.log(graph)

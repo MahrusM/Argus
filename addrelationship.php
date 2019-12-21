@@ -5,16 +5,22 @@ $dotenv = Dotenv\Dotenv::create(__DIR__);
 $dotenv->load();
 $hostname = getenv("HOSTNAME");
 
-$name = $_POST["name"];
+$name1 = $_POST["name1"];
+$name2 = $_POST["name2"];
 
-$service_url = 'http://localhost:8888/entity/store';
+$service_url = 'http://localhost:8888/entity/joinName';
 $curl = curl_init($service_url);
 
+// {
+// 	"name1" : "jancok1",
+// 	"name2" : "janscok2",
+// 	"score" : 10
+// }
 
 $curl_post_data = array(
-        'name' => $name,
-        'phone_number' => '69696969669',
-        'links' => null,
+        'name1' => $name1,
+        'name2' => $name2,
+        'score' => 10,
 );
 
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
