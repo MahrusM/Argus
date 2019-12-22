@@ -48,12 +48,14 @@
         echo "<h2>$phone_number</h2>";
         
         echo "<h2>Relations:</h2><br>";
-
-        foreach ($relations as $value) {
-            $relationname = $value["name"];
-            $relationissue = $value["issue"];
-            echo "<p>Name  : $relationname</p>";
-            echo "<p>Issue : $relationissue</p><br><br><br>";
+        
+        if (count($relations) > 0) {
+            foreach ($relations as $value) {
+                $relationname = $value["name"];
+                $relationissue = $value["issue"];
+                echo "<p>Name  : $relationname</p>";
+                echo "<p>Issue : $relationissue</p><br><br><br>";
+            }
         }
 
         
