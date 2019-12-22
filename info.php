@@ -15,10 +15,51 @@
     <?php
         $name = $_GET["name"];
         echo "<h1>$name</h1>";
-    ?>
-    <p class="title">CEO & Founder, Example</p>
-    <p>Harvard University</p>
-    <a href="#"><i class="fa fa-dribbble"></i></a>
+
+        require_once 'vendor/autoload.php';
+        $dotenv = Dotenv\Dotenv::create(__DIR__);
+        $dotenv->load();
+        $hostname = getenv("HOSTNAME");
+        $backhost = getenv("BACKENDHOST");
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => "$backhost/api/entity/show?name=$name",
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_TIMEOUT => 30,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => "GET",
+          CURLOPT_HTTPHEADER => array(
+            "cache-control: no-cache"
+          ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        $response = json_decode($response, true); //because of true, it's in an array
+        
+        $jabatan = $response['data']['description'];
+        $phone_number = $response['data']['phone_number'];
+        $relations = $response['data']['relationship'];
+
+        echo "<p class='title'>$jabatan</p>";
+        echo "<h2>$phone_number</h2>";
+        
+        echo "<h2>Relations:</h2><br>";
+
+        foreach ($relations as $value) {
+            $relationname = $value["name"];
+            $relationissue = $value["issue"];
+            echo "<p>Name  : $relationname</p>";
+            echo "<p>Issue : $relationissue</p><br><br><br>";
+        }
+
+        
+        curl_close($curl);
+        ?>
+
     <a href="#"><i class="fa fa-twitter"></i></a>
     <a href="#"><i class="fa fa-linkedin"></i></a>
     <a href="#"><i class="fa fa-facebook"></i></a>

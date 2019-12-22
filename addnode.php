@@ -4,16 +4,20 @@ require_once 'vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::create(__DIR__);
 $dotenv->load();
 $hostname = getenv("HOSTNAME");
+$backhost = getenv("BACKENDHOST");
 
 $name = $_POST["name"];
+$jabatan = $_POST["jabatan"];
+$telp = $_POST["telp"];
 
-$service_url = 'http://localhost:8888/entity/store';
+$service_url = "$backhost/api/entity/store";
 $curl = curl_init($service_url);
 
 
 $curl_post_data = array(
         'name' => $name,
-        'phone_number' => '69696969669',
+        'description' => $jabatan,
+        'phone_number' => $telp,
         'links' => null,
 );
 
@@ -36,5 +40,5 @@ echo 'response ok!';
 echo $decoded->meta->message[0];
 
 
-header("Location: $hostname/Argus/index.php");
+header("Location: $hostname/Argus/engine.php");
 die();

@@ -6,20 +6,14 @@ $dotenv->load();
 $hostname = getenv("HOSTNAME");
 $backhost = getenv("BACKENDHOST");
 
-$name1 = $_POST["name1"];
-$name2 = $_POST["name2"];
-$issue = $_POST["issue"];
-$score = $_POST["score"];
+$name = $_POST["name"];
 
-$service_url = "$backhost/api/entity/join";
+$service_url = "$backhost/api/entity/delete";
 $curl = curl_init($service_url);
 
 
 $curl_post_data = array(
-        'name1' => $name1,
-        'name2' => $name2,
-        'issue' => $issue,
-        'score' => $score,
+        'name' => $name,
 );
 
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
