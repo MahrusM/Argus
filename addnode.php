@@ -39,6 +39,5 @@ if (isset($decoded->meta->status_code) && $decoded->meta->status_code == 'ERROR'
 echo 'response ok!';
 echo $decoded->meta->message[0];
 
-
 header("Location: $hostname/engine.php");
 die();

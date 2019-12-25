@@ -260,8 +260,13 @@ height: 100%;
     <svg width="960" height="600"></svg>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script>
+
+<script type="module">
+
 // TAMPILAN
+
+import {hostname} from './config.js';
+
 var coll = document.getElementsByClassName("collapsible");
 var i;
 
@@ -384,13 +389,11 @@ d3.json("http://localhost:8888/api/entity/getraw?", function(error, graph) {
 function nodeclicked(d) {
     console.log("PPG")
     console.log(d)
-  $.getJSON("config.json", function (data) {
-      console.log("INFO LOAD")
-      var url = data.hostname + "/info.php/?name=" + d.name;
-      console.log(url)    
-      $(location).attr('href',url);
-    }
-  );
+
+    var url = hostname + "/info.php/?name=" + d.name;
+    console.log(url)    
+    $(location).attr('href',url);
+  
 }
 
 function dragstarted(d) {

@@ -25,7 +25,7 @@
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-          CURLOPT_URL => "$backhost/api/entity/show?name=$name",
+          CURLOPT_URL => "$backhost/api/entity/show?name=" . rawurlencode($name) ,
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_TIMEOUT => 30,
           CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
@@ -49,9 +49,8 @@
         
         echo "<h2>Relations:</h2><br>";
         
-        echo gettype($jabatan);
 
-        if (gettype($relations) != 'NULL') {
+        if (count($relations) > 0) {
             foreach ($relations as $value) {
                 $relationname = $value["name"];
                 $relationissue = $value["issue"];
