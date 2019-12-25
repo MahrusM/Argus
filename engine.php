@@ -2,8 +2,9 @@
 <meta charset="utf-8">
 <style>
 
-.links lines {
-  stroke: #aaa;
+.links line {
+  stroke-width : 3px;
+  /* stroke: #aaa; */
 }
 
 .nodes circle {
@@ -60,6 +61,11 @@ margin:7px 0;
 position:relative;
 display:block;
 width:250px;
+}
+
+.nodes circle {
+  stroke: #FFFFFF;
+  stroke-width: 4px;
 }
 
 .main-menu li>a {
@@ -246,18 +252,32 @@ height: 100%;
                       </form>
                     </div>
                 </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-bar-chart-o fa-2x"></i>
+                <li class="has-subnav">
+                    <a class="collapsible" href="#">
+                       <i class="fa fa-minus fa-2x"></i>
                         <span class="nav-text">
-                            Graphs and Statistics
+                            Delete Relationship
                         </span>
                     </a>
+                    <div class="collapsing" style="display:none; font-family: 'Titillium Web', sans-serif; color:white;">
+                      <form action="deleterelationship.php" method="post" style="margin-left:20px">
+                          Nama 1:<br>
+                          <input type="text" name="name1" value="">
+                          <br>
+                          Nama 2:<br>
+                          <input type="text" name="name2" value="">
+                          <br>
+                          Issue:<br>
+                          <input type="text" name="issue" value="">
+                          <br>
+                          <input type="submit" value="Submit">
+                      </form>
+                    </div>
                 </li>
                 
             </ul>
         </nav>
-    <svg width="960" height="600"></svg>
+    <svg width="1060" height="720"></svg>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
@@ -286,37 +306,8 @@ document.getElementById("areabb").addEventListener("mouseleave", function(){
   document.getElementsByClassName("collapsing").style.display = "none";
 })
 
-// for (i = 0; i < coll.length; i++) {
-//   coll[i].addEventListener("mouseleave", function() {
-//     this.classList.toggle("active");
-//     var content = this.nextElementSibling;
-//     content.style.display = "none";
-//   });
-// }
-
-// var coll = document.getElementsByClassName("collapsing");
-// var i;
-
-// for (i = 0; i < coll.length; i++) {
-//   coll[i].addEventListener("mouseleave", function() {
-//     this.classList.toggle("active");
-//     var content = this;
-//     content.style.display = "none";
-//   });
-// }
-
 // SCRIPT AJAX
 console.log("WOW")
-// $.ajax({
-//   type: "GET",
-//   url: "http://localhost:8888/entity/getraw",
-//   data: "",
-//   dataType: "application/json",
-//   success: function (response) {
-
-//   }
-//   // console.log("WOW4")
-// });
 
 $("svg").attr("width", $(window).width());
 $("svg").attr("height", $(window).height());
@@ -326,10 +317,39 @@ var svg = d3.select("svg"),
     height = +svg.attr("height");
 
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function(d) { return d.id; }))
-    .force("charge", d3.forceManyBody())
+    .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(0.5))
+    .force("charge", d3.forceManyBody().strength(function(d) { return [forcecircle(d.id)]; }))
     .force("center", d3.forceCenter(width / 2, height / 2));
-// http://localhost:8888/entity/getraw
+
+// var simulation = d3.forceSimulation()
+//     .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(0.5))
+//     .force("charge", d3.forceManyBody())
+//     .force("center", d3.forceCenter(width / 2, height / 2))
+
+var datallink
+
+$.ajax({
+  type: "GET",
+  url: "http://localhost:8888/api/entity/getraw?",
+  async: false,
+  success: function (response) {
+    datallink = response['links']
+    console.log("DATALINK", datallink)
+  }
+});
+
+var colorord = d3.scaleOrdinal(d3.schemeCategory20);
+
+function color(inp) {
+  if (inp == 1) {
+    return "#1ed918"
+  }
+  if (inp == -1) {
+    return "#d14141"
+  }
+  return "#52a3d9"
+} 
+// http://localhost:8888/api/entity/getraw?issue[]=Anime&issue[]=pepeg
 d3.json("http://localhost:8888/api/entity/getraw?", function(error, graph) {
   if (error) throw error;
 
@@ -340,38 +360,57 @@ d3.json("http://localhost:8888/api/entity/getraw?", function(error, graph) {
     .selectAll("line")
     .data(graph.links)
 
-  var link = ppg.enter().append("line").attr("stroke", "#faa");
+  var link = ppg.enter().append("line").attr("stroke", function(d) { console.log(color(d.value)); return color(d.value); });
 
-
-
-  var ppge = svg.append("g")
+  var node = svg.append("g")
       .attr("class", "nodes")
-    .selectAll("circle")
+    .selectAll("g")
     .data(graph.nodes)
-  
-  var node = ppge.enter().append("circle")
-      .attr("r", 5)
+    .enter().append("g")
+
+  var circles = node.append("circle")
+      .attr("r", function(d) { return sizecircle(d.id) })
       .on("click", nodeclicked)
+      .attr("fill", function(d) { return colorord(d.description); })
       .call(d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
           .on("end", dragended))
 
+  
+
   console.log("node")
   console.log(node)
   console.log("link")
   console.log(link)
-  
 
   node.append("title")
       .text(function(d) { return d.name; });
+  
+  node.append("text")
+      .text(function(d) {
+        return d.name;
+      })
+      .attr('fill', '#4ba5d6')
+      .attr('font-family', "Raleway")
+      .attr('font-weight', "bold")
+      .attr('x', 6)
+      .attr('y', 3);
 
   simulation
       .nodes(graph.nodes)
       .on("tick", ticked);
 
   simulation.force("link")
-      .links(graph.links);
+      .links(graph.links)
+      .strength(function(link)  {
+        if (link.value == -1)  {
+          console.log(link.target,"RED")
+          console.log(link.source,"RED")
+          return 0.1
+        };
+        return 0.65;
+      })  
 
   function ticked() {
     link
@@ -381,10 +420,65 @@ d3.json("http://localhost:8888/api/entity/getraw?", function(error, graph) {
         .attr("y2", function(d) { return d.target.y; });
 
     node
-        .attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        })
+        // .attr("cx", function(d) { return d.x; })
+        // .attr("cy", function(d) { return d.y; });
   }
 });
+
+function sizecircle(did) {
+  var initsize = 5; 
+  datallink.forEach(element => {
+    if ((element.source == did) || (element.target == did)) {
+      initsize = initsize + 2;
+    }
+  });
+  return initsize
+}
+
+function forcecircle(did) {
+  var initsize = -20; 
+  datallink.forEach(element => {
+    if (element.value == 1){
+      if ((element.source == did) || (element.target == did)) {
+        initsize = initsize - 20;
+      }
+    }else{
+      if ((element.source == did) || (element.target == did)) {
+        initsize = initsize - 30;
+      }
+    }
+  });
+  console.log("FORCES", initsize)
+  return initsize
+}
+
+// 1/(1 + e^(-x))
+
+
+
+// function forcelink(did) {
+//   var licounter = 0;
+//   console.log(did, "DID PEPEG")
+//   datallink.forEach(element => {
+//     if (element.value == 1){
+//       if ((element.source == did) || (element.target == did)) {
+//         licounter = licounter + 1;
+//         console.log("INCREMENET")
+//       }
+//     }else{
+//       if ((element.source == did) || (element.target == did)) {
+//         licounter = licounter - 1;
+//         console.log("DECREMENET")
+//       }
+//     }
+//   });
+//   var newforce = 1 / (1 + Math.exp(-licounter));
+//   console.log("NEWlink", newforce)
+//   return newforce
+// }
 
 function nodeclicked(d) {
     console.log("PPG")
@@ -392,9 +486,8 @@ function nodeclicked(d) {
 
     var url = hostname + "/info.php/?name=" + d.name;
     console.log(url)    
-    $(location).attr('href',url);
-  
-}
+    $(location).attr('href',url); 
+}  
 
 function dragstarted(d) {
   if (!d3.event.active) simulation.alphaTarget(0.3).restart();
@@ -406,6 +499,7 @@ function dragged(d) {
   d.fx = d3.event.x;
   d.fy = d3.event.y;
 }
+
 
 function dragended(d) {
   if (!d3.event.active) simulation.alphaTarget(0);
