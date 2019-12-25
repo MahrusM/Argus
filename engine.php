@@ -386,7 +386,7 @@ function nodeclicked(d) {
     console.log(d)
   $.getJSON("config.json", function (data) {
       console.log("INFO LOAD")
-      var url = data.hostname + "/Argus/info.php/?name=" + d.name;
+      var url = data.hostname + "/info.php/?name=" + d.name;
       console.log(url)    
       $(location).attr('href',url);
     }

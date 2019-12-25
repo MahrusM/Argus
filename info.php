@@ -49,7 +49,9 @@
         
         echo "<h2>Relations:</h2><br>";
         
-        if (count($relations) > 0) {
+        echo gettype($jabatan);
+
+        if (gettype($relations) != 'NULL') {
             foreach ($relations as $value) {
                 $relationname = $value["name"];
                 $relationissue = $value["issue"];

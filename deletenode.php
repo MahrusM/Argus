@@ -35,5 +35,5 @@ echo 'response ok!';
 echo $decoded->meta->message[0];
 
 
-header("Location: $hostname/Argus/engine.php");
+header("Location: $hostname/engine.php");
 die();
