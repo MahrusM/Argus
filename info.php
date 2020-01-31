@@ -43,9 +43,12 @@
         $jabatan = $response['data']['description'];
         $phone_number = $response['data']['phone_number'];
         $relations = $response['data']['relationship'];
+        $email = $response['data']['links'][0];
+        $linkedin = $response['data']['links'][1];
 
         echo "<p class='title'>$jabatan</p>";
         echo "<h2>$phone_number</h2>";
+        echo "<h2>$email</h2>";
         
         echo "<h2>Relations:</h2><br>";
         
@@ -60,12 +63,10 @@
         }
 
         
+        echo "<a href='$linkedin'><i class='fa fa-linkedin'></i></a>";
+
         curl_close($curl);
         ?>
-
-    <a href="#"><i class="fa fa-twitter"></i></a>
-    <a href="#"><i class="fa fa-linkedin"></i></a>
-    <a href="#"><i class="fa fa-facebook"></i></a>
     <p><button onclick="goBack()">Back</button></p>
     </div> 
 

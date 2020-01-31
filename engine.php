@@ -193,7 +193,7 @@ height: 100%;
                       </a>
                     </div>
                     <div class="collapsing" style="display:none; font-family: 'Titillium Web', sans-serif; color:white;">
-                      <form action="addnode.php" method="post" style="margin-left:20px">
+                      <form autocomplete="off" action="addnode.php" method="post" style="margin-left:20px">
                           Nama:<br>
                           <input type="text" name="name" value="">
                           <br>
@@ -202,6 +202,12 @@ height: 100%;
                           <br>
                           No Telepon:<br>
                           <input type="text" name="telp" value="">
+                          <br>
+                          Email:<br>
+                          <input type="text" name="email" value="">
+                          <br>
+                          Linked In:<br>
+                          <input type="text" name="linkedin" value="">
                           <br>
                           <br>
                           <input type="submit" value="Submit">
@@ -217,7 +223,7 @@ height: 100%;
                       </a>
                     </div>
                     <div class="collapsing" style="display:none; font-family: 'Titillium Web', sans-serif; color:white;">
-                      <form action="addrelationship.php" method="post" style="margin-left:20px">
+                      <form autocomplete="off" action="addrelationship.php" method="post" style="margin-left:20px">
                           Initial Node:<br>
                           <input type="text" name="name1" value="">
                           <br>
@@ -244,7 +250,7 @@ height: 100%;
                         </span>
                     </a>
                     <div class="collapsing" style="display:none; font-family: 'Titillium Web', sans-serif; color:white;">
-                    <form action="deletenode.php" method="post" style="margin-left:20px">
+                    <form autocomplete="off" action="deletenode.php" method="post" style="margin-left:20px">
                           Nama:<br>
                           <input type="text" name="name" value="">
                           <br>
@@ -260,7 +266,7 @@ height: 100%;
                         </span>
                     </a>
                     <div class="collapsing" style="display:none; font-family: 'Titillium Web', sans-serif; color:white;">
-                      <form action="deleterelationship.php" method="post" style="margin-left:20px">
+                      <form autocomplete="off" action="deleterelationship.php" method="post" style="margin-left:20px">
                           Nama 1:<br>
                           <input type="text" name="name1" value="">
                           <br>
@@ -269,6 +275,64 @@ height: 100%;
                           <br>
                           Issue:<br>
                           <input type="text" name="issue" value="">
+                          <br>
+                          <input type="submit" value="Submit">
+                      </form>
+                    </div>
+                </li>
+                <li class="has-subnav">
+                    <a class="collapsible" href="#">
+                       <i class="fa fa-circle fa-2x"></i>
+                        <span class="nav-text">
+                            Isolate Issues
+                        </span>
+                    </a>
+                    <div class="collapsing" style="display:none; font-family: 'Titillium Web', sans-serif; color:white;">
+                      <form style="margin-left:20px">
+                          Issues (separate with a comma):<br>
+                          <input id="issuesinp" type="text" name="issue" value="">
+                          <br>
+                          <script type="module">
+
+                            import {hostname} from './config.js';
+
+                            var issueString
+
+
+                            window.issueClick =  function issueClick() {
+                              console.log("ISSUE KURIKU")
+
+                              issueString = document.getElementById("issuesinp").value.replace(", ", ",").split(",")
+
+                              console.log(issueString)
+                              
+                              var redirectURL = hostname + "/engine.php?"
+
+                              issueString.forEach(element => {
+                                redirectURL += ("issue=" + element +"&")
+                              });
+
+                              window.location.replace(redirectURL);                              
+
+                              return false
+                            }
+
+                          </script>
+                          <button id="pepegebutton" type="button" onClick="issueClick()"> Submit </button>
+                      </form>
+                    </div>
+                </li>
+                <li class="has-subnav">
+                    <a class="collapsible" href="#">
+                       <i class="fa fa-search fa-2x"></i>
+                        <span class="nav-text">
+                            Search
+                        </span>
+                    </a>
+                    <div class="collapsing" style="display:none; font-family: 'Titillium Web', sans-serif; color:white;">
+                      <form autocomplete="off" action="searchinfo.php" method="post" style="margin-left:20px">
+                          Search for subject:<br>
+                          <input id="searchinp" type="text" name="search" value="">
                           <br>
                           <input type="submit" value="Submit">
                       </form>
@@ -349,8 +413,22 @@ function color(inp) {
   }
   return "#52a3d9"
 } 
+
 // http://localhost:8888/api/entity/getraw?issue[]=Anime&issue[]=pepeg
-d3.json("http://localhost:8888/api/entity/getraw?", function(error, graph) {
+var url_string = window.location.href;
+var url = new URL(url_string);
+var issues = url.searchParams.getAll("issue");
+
+console.log("ISSSUES", issues)
+
+var getrawurl = "http://localhost:8888/api/entity/getraw?"
+issues.forEach(element => {
+  getrawurl = getrawurl + "issue[]=" + element + "&";
+});
+
+console.log(getrawurl)
+
+d3.json(getrawurl, function(error, graph) {
   if (error) throw error;
 
   console.log(graph)
@@ -394,6 +472,7 @@ d3.json("http://localhost:8888/api/entity/getraw?", function(error, graph) {
       .attr('fill', '#4ba5d6')
       .attr('font-family', "Raleway")
       .attr('font-weight', "bold")
+      .attr('font-size', "10px")
       .attr('x', 6)
       .attr('y', 3);
 
@@ -429,29 +508,32 @@ d3.json("http://localhost:8888/api/entity/getraw?", function(error, graph) {
 });
 
 function sizecircle(did) {
+  // console.log(typeof(issues))  
   var initsize = 5; 
   datallink.forEach(element => {
-    if ((element.source == did) || (element.target == did)) {
-      initsize = initsize + 2;
+    if (issues.includes(element.issue)){
+      if ((element.source == did) || (element.target == did)) {
+        initsize = initsize + 2;
+      }
     }
   });
   return initsize
 }
 
 function forcecircle(did) {
-  var initsize = -20; 
+  var initsize = -10; 
   datallink.forEach(element => {
     if (element.value == 1){
       if ((element.source == did) || (element.target == did)) {
-        initsize = initsize - 20;
+        initsize = initsize - 15;
       }
     }else{
       if ((element.source == did) || (element.target == did)) {
-        initsize = initsize - 30;
+        initsize = initsize - 20;
       }
     }
   });
-  console.log("FORCES", initsize)
+  // console.log("FORCES", initsize)
   return initsize
 }
 

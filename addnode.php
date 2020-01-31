@@ -9,17 +9,20 @@ $backhost = getenv("BACKENDHOST");
 $name = $_POST["name"];
 $jabatan = $_POST["jabatan"];
 $telp = $_POST["telp"];
+$email = $_POST["email"];
+$linkedin = $_POST["linkedin"];
 
 $service_url = "$backhost/api/entity/store";
 $curl = curl_init($service_url);
 
-
-$curl_post_data = array(
+$data = array(
         'name' => $name,
         'description' => $jabatan,
         'phone_number' => $telp,
-        'links' => null,
+        'links' => array($email, $linkedin),
 );
+
+$curl_post_data = http_build_query($data);
 
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($curl, CURLOPT_POST, true);
